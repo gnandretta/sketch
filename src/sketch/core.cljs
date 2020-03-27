@@ -15,11 +15,13 @@
   (doseq [[name f] spec]
     (o/set p name (fn [] (f p)))))
 
+(defn instance [methods-spec parent-id]
+  (new js/p5
+       (fn [p] (set-methods p methods-spec))
+       parent-id))
+
 (when-not (d/getElement parent-id)
   (d/append js/document.body (d/createDom "div" #js {:id parent-id})))
 
 (def example
-  (new js/p5
-       (fn [p]
-         (set-methods p [["setup" setup] ["draw" draw]]))
-       parent-id))
+  (instance [["setup" setup] ["draw" draw]] parent-id))
