@@ -11,7 +11,15 @@
          (or (defonce ~name (instance ~methods-spec ~parent-id))
              (set-methods ~name ~methods-spec)))))
 
-(defmacro defp5fn [name]
-  (let [p5-name (-> name str impl/dash-case->camel-case)]
-    `(defn ~name [& ~'args]
-       (apply* ~p5-name ~'args))))
+(defn- build-p5fn-arity
+  ([p5-name params] (build-p5fn-arity p5-name params params))
+  ([p5-name clj-params p5-params]
+   (list clj-params
+         (list 'sketch.p5.apply* p5-name p5-params))))
+
+(defmacro defp5fn [name & params]
+  (let [p5-name (-> name str impl/dash-case->camel-case)
+        build (partial build-p5fn-arity p5-name)]
+    `(defn ~name ~@(cond (empty? params) (build '[& params] 'params)
+                         (= (count params) 1) (build (first params))
+                         :else (map build params)))))

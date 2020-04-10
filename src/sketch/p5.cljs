@@ -52,6 +52,10 @@
   (let [o (or *sketch* js/window)]
     (.apply (o/get o p5fn-name) o (into-array args))))
 
-(defp5fn create-canvas)
-(defp5fn fill)
-(defp5fn ellipse)
+(defp5fn create-canvas [w h] [w h renderer])
+(defp5fn fill
+  [r-or-h g-or-s b-or-b alpha]
+  [r-or-h g-or-s b-or-b]
+  [str-gray-rgba-or-color]
+  [gray alpha])
+(defp5fn ellipse [x y w] [x y w h] [x y w h detail])
