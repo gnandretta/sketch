@@ -13,3 +13,6 @@
   (draw [{:keys [colors mouse-is-pressed mouse-x mouse-y]}]
     (p5/fill (if mouse-is-pressed 0 (first colors)))
     (p5/ellipse mouse-x mouse-y  80 80)))
+
+(comment
+  (.setup example))

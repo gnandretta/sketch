@@ -8,7 +8,8 @@
   (let [parent-id (str name)
         methods-spec (mapv method-form->method-spec method-forms)]
     `(do (ensure-parent ~parent-id)
-         (def ~name (instance ~methods-spec ~parent-id)))))
+         (or (defonce ~name (instance ~methods-spec ~parent-id))
+             (set-methods ~name ~methods-spec)))))
 
 (defmacro defp5fn [name]
   (let [p5-name (-> name str impl/dash-case->camel-case)]
