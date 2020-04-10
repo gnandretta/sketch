@@ -1,5 +1,6 @@
 (ns sketch.core
-  (:require [goog.dom :as d]))
+  (:require [goog.object :as o]
+            [goog.dom :as d]))
 
 (defn setup [p]
   (.createCanvas p 640 480))
@@ -10,12 +11,15 @@
 
 (def parent-id  "example")
 
+(defn set-methods [p spec]
+  (doseq [[name f] spec]
+    (o/set p name (fn [] (f p)))))
+
 (when-not (d/getElement parent-id)
   (d/append js/document.body (d/createDom "div" #js {:id parent-id})))
 
 (def example
   (new js/p5
        (fn [p]
-         (set! (.-setup p) (fn [] (setup p)))
-         (set! (.-draw p) (fn [] (draw p))))
+         (set-methods p [["setup" setup] ["draw" draw]]))
        parent-id))
