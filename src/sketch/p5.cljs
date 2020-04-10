@@ -1,19 +1,33 @@
 (ns sketch.p5
-  (:require [goog.object :as o]
+  (:require [sketch.p5.impl :as impl]
+            [goog.object :as o]
             [goog.dom :as d])
   (:require-macros [sketch.p5 :refer [defp5fn]]))
 
 (def ^:dynamic *sketch* nil)
 
+(defn prop
+  ([name] (prop name nil))
+  ([name not-found] (o/get (or *sketch* js/window)
+                           (impl/dash-case->camel-case (clojure.core/name name))
+                           not-found)))
+
+(deftype World []
+  ILookup
+  (-lookup [this k] (-lookup this k nil))
+  (-lookup [_ k not-found] (prop k not-found)))
+
 (defn- set-methods [p spec]
   (doseq [[name f] spec]
     (o/set p name (fn []
                     (binding [*sketch* p]
-                      (f p))))))
+                      (f (.-world p)))))))
 
 (defn instance [methods-spec parent-id]
   (new js/p5
-       (fn [p] (set-methods p methods-spec))
+       (fn [p]
+         (o/set p "world" (World.))
+         (set-methods p methods-spec))
        parent-id))
 
 (defn ensure-parent [id]

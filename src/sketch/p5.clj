@@ -1,10 +1,5 @@
 (ns sketch.p5
-  (:require [clojure.string :as str]))
-
-(defn- dash-case->camel-case [dash-str]
-  (let [words (str/split dash-str #"-")]
-    (str/join (conj (map str/capitalize (rest words))
-                    (first words)))))
+  (:require [sketch.p5.impl :as impl]))
 
 (defn- method-form->method-spec [[name & args-and-body]]
   [(str name) (conj args-and-body 'clojure.core/fn)])
@@ -16,6 +11,6 @@
          (def ~name (instance ~methods-spec ~parent-id)))))
 
 (defmacro defp5fn [name]
-  (let [p5-name (-> name str dash-case->camel-case)]
+  (let [p5-name (-> name str impl/dash-case->camel-case)]
     `(defn ~name [& ~'args]
        (apply* ~p5-name ~'args))))
