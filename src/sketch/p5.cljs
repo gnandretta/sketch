@@ -25,6 +25,10 @@
 (defn- set-methods [p spec]
   (doseq [[name f] spec]
     (set-method p name (case name
+                         "setup" (fn []
+                                   (let [result (f)]
+                                     (when (map? result)
+                                       (reset! (.. *sketch* -params -state) result))))
                          "draw" (fn []
                                   (when-let [update (.-update *sketch*)]
                                     (swap! (.. *sketch* -params -state)
