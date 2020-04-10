@@ -20,8 +20,11 @@
        (fn [p] (set-methods p methods-spec))
        parent-id))
 
-(when-not (d/getElement parent-id)
-  (d/append js/document.body (d/createDom "div" #js {:id parent-id})))
+(defn ensure-parent [id]
+  (when-not (d/getElement id)
+    (d/append js/document.body (d/createDom "div" #js {:id id}))))
+
+(ensure-parent parent-id)
 
 (def example
   (instance [["setup" setup] ["draw" draw]] parent-id))
