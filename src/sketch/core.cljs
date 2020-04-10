@@ -3,7 +3,7 @@
 
 (p5/defsketch example
   (setup []
-    (p5/create-canvas 640 480
-  (draw [world]
-    (p5/fill (if (:mouse-is-pressed world) 0 255))
-    (p5/ellipse (:mouse-x world) (:mouse-y world) 80 80)))
+    (p5/create-canvas 640 480))
+  (draw [{:keys [mouse-is-pressed mouse-x mouse-y]}]
+    (p5/fill (if mouse-is-pressed 0 255))
+    (p5/ellipse mouse-x mouse-y  80 80)))
