@@ -12,21 +12,31 @@
                            (impl/dash-case->camel-case (clojure.core/name name))
                            not-found)))
 
-(deftype World []
+(deftype Params [state]
   ILookup
   (-lookup [this k] (-lookup this k nil))
-  (-lookup [_ k not-found] (prop k not-found)))
+  (-lookup [_ k not-found] (get @state k (prop k not-found))))
+
+(defn- set-method [p name f]
+  (o/set p name (fn [& args]
+                  (binding [*sketch* p]
+                    (apply f args)))))
 
 (defn- set-methods [p spec]
   (doseq [[name f] spec]
-    (o/set p name (fn []
-                    (binding [*sketch* p]
-                      (f (.-world p)))))))
+    (set-method p name (case name
+                         "draw" (fn []
+                                  (when-let [update (.-update *sketch*)]
+                                    (swap! (.. *sketch* -params -state)
+                                           update
+                                           (.-params *sketch*)))
+                                  (f (.-params *sketch*)))
+                         f))))
 
 (defn instance [methods-spec parent-id]
   (new js/p5
        (fn [p]
-         (o/set p "world" (World.))
+         (o/set p "params" (Params. (atom {})))
          (set-methods p methods-spec))
        parent-id))
 
