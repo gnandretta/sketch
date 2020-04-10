@@ -1,6 +1,7 @@
 (ns sketch.p5
   (:require [goog.object :as o]
-            [goog.dom :as d]))
+            [goog.dom :as d])
+  (:require-macros [sketch.p5]))
 
 (defn- set-methods [p spec]
   (doseq [[name f] spec]
